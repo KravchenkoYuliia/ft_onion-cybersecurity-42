@@ -1,0 +1,8 @@
+Port 4242
+Protocol 2
+PermitRootLogin no
+PasswordAuthentication yes
+PubkeyAuthentication yes
+AllowUsers yukravch
+X11Forwarding no
+UsePAM yes
