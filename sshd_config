@@ -3,6 +3,6 @@ Protocol 2
 PermitRootLogin no
 PasswordAuthentication yes
 PubkeyAuthentication yes
-AllowUsers yukravch
+AllowUsers user
 X11Forwarding no
 UsePAM yes

@@ -1,9 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ft_onion</title>
+<meta charset="utf-8">
+<title>ft_onion | Plant Quiz</title>
+<style>
+  body { margin:0; font-family:sans-serif; background:#e8f5e9; text-align:center; }
+  h1 { color:#2e7d32; margin:16px 0 4px; }
+  #score { color:#555; margin-bottom:8px; }
+  #board { display:grid; grid-template-columns:repeat(3, 150px);
+           grid-template-rows:repeat(3, 150px); gap:12px;
+           justify-content:center; margin:auto; }
+  .plant { background:#fff; border-radius:16px; border:3px solid #a5d6a7; cursor:pointer;
+           display:flex; flex-direction:column; align-items:center; justify-content:center;
+           font-size:64px; transition:transform .15s; }
+  .plant span { font-size:16px; color:#333; margin-top:4px; }
+  .plant:hover { transform:scale(1.08); }
+  .plant.locked { pointer-events:none; opacity:.5; }
+  #p0 { grid-area:1/1; } #p1 { grid-area:1/3; }
+  #p2 { grid-area:3/1; } #p3 { grid-area:3/3; }
+  #center { grid-area:2/2; display:flex; flex-direction:column; align-items:center;
+            justify-content:center; font-size:18px; font-weight:bold; color:#1b5e20; }
+  #result { font-size:80px; line-height:1; }
+  #result.bad { color:#d32f2f; }
+  button { margin-top:8px; padding:6px 14px; font-size:15px; border:0; border-radius:8px;
+           background:#2e7d32; color:#fff; cursor:pointer; }
+  .confetti { position:fixed; top:-20px; width:10px; height:14px;
+              animation:fall 2.5s linear forwards; pointer-events:none; }
+  @keyframes fall { to { transform:translateY(110vh) rotate(720deg); } }
+</style>
 </head>
 <body>
-    <h1>page is coming......... :)</h1>
+<h1>Plant Quiz</h1>
+<div id="score"></div>
+<div id="board">
+  <div class="plant" id="p0"></div>
+  <div class="plant" id="p1"></div>
+  <div class="plant" id="p2"></div>
+  <div class="plant" id="p3"></div>
+  <div id="center"></div>
+</div>
+
+<script>
+const plants = [
+  { id: "cactus",    emoji: "🌵", name: "Cactus" },
+  { id: "fern",      emoji: "🌿", name: "Fern" },
+  { id: "sunflower", emoji: "🌻", name: "Sunflower" },
+  { id: "rose",      emoji: "🌹", name: "Rose" }
+];
+const questions = [
+  { q: "Which plant needs a lot of sun?",        answer: "sunflower" },
+  { q: "Which plant loves shade and humidity?",  answer: "fern" },
+  { q: "Which plant stores water in its stem?",  answer: "cactus" }
+];
+
+let current = 0, score = 0;
+const center = document.getElementById("center");
+const scoreEl = document.getElementById("score");
+const cells = [0, 1, 2, 3].map(i => document.getElementById("p" + i));
+
+function showQuestion() {
+  scoreEl.textContent = "Question " + (current + 1) + "/" + questions.length + " | Score: " + score;
+  center.textContent = questions[current].q;
+  plants.forEach((p, i) => {
+    cells[i].className = "plant";
+    cells[i].innerHTML = p.emoji + "<span>" + p.name + "</span>";
+    cells[i].onclick = () => answer(p);
+  });
+}
+
+function answer(p) {
+  cells.forEach(c => { c.classList.add("locked"); c.onclick = null; });
+  const ok = p.id === questions[current].answer;
+  const last = current === questions.length - 1;
+  if (ok) { score++; confetti(); }
+  center.innerHTML = '<div id="result" class="' + (ok ? "" : "bad") + '">' +
+                     (ok ? p.emoji : "✖") + "</div>";
+  const btn = document.createElement("button");
+  btn.textContent = last ? "Restart" : "Next";
+  btn.onclick = () => {
+    if (last) { current = 0; score = 0; } else { current++; }
+    showQuestion();
+  };
+  center.appendChild(btn);
+  if (last) scoreEl.textContent = "Final score: " + score + "/" + questions.length;
+}
+
+function confetti() {
+  const colors = ["#e53935", "#fdd835", "#43a047", "#1e88e5", "#8e24aa"];
+  for (let i = 0; i < 40; i++) {
+    const d = document.createElement("div");
+    d.className = "confetti";
+    d.style.left = Math.random() * 100 + "vw";
+    d.style.background = colors[i % colors.length];
+    d.style.animationDelay = Math.random() * 0.5 + "s";
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 3500);
+  }
+}
+
+showQuestion();
+</script>
 </body>
 </html>
